@@ -1067,35 +1067,50 @@ private struct MascotsPage: View {
     @State private var previewStatus: AgentStatus = .processing
     @AppStorage(SettingsKey.mascotSpeed) private var mascotSpeed = SettingsDefaults.mascotSpeed
     @AppStorage(SettingsKey.defaultSource) private var defaultSource = SettingsDefaults.defaultSource
+    @AppStorage(SettingsKey.mascotSelections) private var mascotSelections = SettingsDefaults.mascotSelections
 
-    private let mascotList: [(name: String, source: String, desc: String, color: Color)] = [
-        ("Clawd", "claude", "Claude Code", Color(red: 0.871, green: 0.533, blue: 0.427)),
-        ("Dex", "codex", "Codex (OpenAI)", Color(red: 0.92, green: 0.92, blue: 0.93)),
-        ("Grok", "grok", "Grok CLI", Color.white),
-        ("Gemini", "gemini", "Gemini CLI", Color(red: 0.278, green: 0.588, blue: 0.894)),
-        ("CursorBot", "cursor", "Cursor", Color(red: 0.96, green: 0.31, blue: 0.0)),
-        ("TraeBot", "trae", "Trae", Color(red: 0.96, green: 0.31, blue: 0.0)),
-        ("TraeCNBot", "traecn", "Trae CN", Color(red: 0.96, green: 0.31, blue: 0.0)),
-        ("CopilotBot", "copilot", "GitHub Copilot", Color(red: 0.35, green: 0.75, blue: 0.95)),
-        ("QoderBot", "qoder", "Qoder", Color(red: 0.165, green: 0.859, blue: 0.361)),
-        ("QoderBot", "qoderwork", "QoderWork", Color(red: 0.165, green: 0.859, blue: 0.361)),
-        ("Droid", "droid", "Factory", Color(red: 0.835, green: 0.416, blue: 0.149)),
-        ("Buddy", "codebuddy", "CodeBuddy", Color(red: 0.424, green: 0.302, blue: 1.0)),
-        ("BuddyCN", "codybuddycn", "CodyBuddyCN", Color(red: 0.424, green: 0.302, blue: 1.0)),
-        ("StepFun", "stepfun", "StepFun", Color(red: 0.424, green: 0.302, blue: 1.0)),
-        ("AntiGravity", "antigravity", "AntiGravity", Color(red: 0.424, green: 0.302, blue: 1.0)),
-        ("WorkBuddy", "workbuddy", "WorkBuddy", Color(red: 0.475, green: 0.380, blue: 0.870)),
-        ("Hermes", "hermes", "Hermes", Color(red: 0.424, green: 0.302, blue: 1.0)),
-        ("Molty", "openclaw", "OpenClaw", Color(red: 0.93, green: 0.36, blue: 0.24)),
-        ("QwenBot", "qwen", "Qwen Code", Color(red: 0.486, green: 0.228, blue: 0.929)),
-        ("KimiBot", "kimi", "Kimi Code CLI", Color(red: 0.29, green: 0.56, blue: 1.0)),
-        ("Kiro", "kiro", "Kiro", Color(red: 0.62, green: 0.45, blue: 1.0)),
-        ("Pi", "pi", "Pi", Color(red: 0.55, green: 0.43, blue: 0.95)),
-        ("Oh My Pi", "omp", "Oh My Pi", Color(red: 0.55, green: 0.43, blue: 0.95)),
-        ("OpBot", "opencode", "OpenCode", Color(red: 0.55, green: 0.55, blue: 0.57)),
-        ("ClineBot", "cline", "Cline", Color(red: 0.00, green: 0.70, blue: 0.49)),
-        ("Gemini", "google-antigravity", "Google Antigravity", Color(red: 0.278, green: 0.588, blue: 0.894)),
-    ]
+    private var runtimeSources: [(source: String, name: String)] {
+        var customNames: [String: String] = [:]
+        for config in ConfigInstaller.customCLIConfigs() {
+            guard let source = SessionSnapshot.normalizedSupportedSource(config.source) else { continue }
+            customNames[source] = config.name
+        }
+
+        let sources = SessionSnapshot.supportedSources
+            .union(customNames.keys)
+            .compactMap { SessionSnapshot.normalizedSupportedSource($0) }
+        return Set(sources).map { source in
+            var session = SessionSnapshot()
+            session.source = source
+            return (source, customNames[source] ?? session.sourceLabel)
+        }.sorted { lhs, rhs in
+            lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
+        }
+    }
+
+    private var defaultMascot: Binding<String> {
+        Binding(
+            get: { BuiltInMascot.automatic(for: defaultSource).rawValue },
+            set: { value in
+                guard let mascot = BuiltInMascot(rawValue: value) else { return }
+                defaultSource = mascot.defaultSource
+            }
+        )
+    }
+
+    private func mascotSelection(for source: String) -> Binding<String> {
+        Binding(
+            get: {
+                MascotSelectionStore(serializedValue: mascotSelections)
+                    .selection(for: source)?.rawValue ?? ""
+            },
+            set: { value in
+                var store = MascotSelectionStore(serializedValue: mascotSelections)
+                store.setSelection(BuiltInMascot(rawValue: value), for: source)
+                mascotSelections = store.serializedValue
+            }
+        )
+    }
 
     var body: some View {
         Form {
@@ -1121,9 +1136,9 @@ private struct MascotsPage: View {
                     set: { mascotSpeed = Int($0) }
                 ), in: 0...300, step: 25)
 
-                Picker(selection: $defaultSource) {
-                    ForEach(mascotList, id: \.source) { mascot in
-                        Text(mascot.desc).tag(mascot.source)
+                Picker(selection: defaultMascot) {
+                    ForEach(BuiltInMascot.allCases) { mascot in
+                        Text(mascot.sourceDescription).tag(mascot.rawValue)
                     }
                 } label: {
                     Text(l10n["default_mascot"])
@@ -1135,14 +1150,24 @@ private struct MascotsPage: View {
             }
 
             Section {
-                ForEach(mascotList, id: \.source) { mascot in
-                    MascotRow(
-                        name: mascot.name,
-                        source: mascot.source,
-                        desc: mascot.desc,
-                        color: mascot.color,
-                        status: previewStatus
-                    )
+                ForEach(runtimeSources, id: \.source) { runtimeSource in
+                    Picker(runtimeSource.name, selection: mascotSelection(for: runtimeSource.source)) {
+                        Text(l10n["automatic"]).tag("")
+                        ForEach(BuiltInMascot.allCases) { mascot in
+                            Text(mascot.name).tag(mascot.rawValue)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                }
+            } header: {
+                Text(l10n["agent_mascot_assignments"])
+            } footer: {
+                Text(l10n["agent_mascot_assignments_desc"])
+            }
+
+            Section {
+                ForEach(BuiltInMascot.allCases) { mascot in
+                    MascotRow(mascot: mascot, status: previewStatus)
                 }
             }
         }
@@ -1151,10 +1176,7 @@ private struct MascotsPage: View {
 }
 
 private struct MascotRow: View {
-    let name: String
-    let source: String
-    let desc: String
-    let color: Color
+    let mascot: BuiltInMascot
     let status: AgentStatus
 
     var body: some View {
@@ -1163,20 +1185,20 @@ private struct MascotRow: View {
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                     .fill(Color.black)
                     .frame(width: 56, height: 56)
-                MascotView(source: source, status: status, size: 40)
+                MascotView(mascot: mascot, status: status, size: 40)
             }
 
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 6) {
-                    Text(name)
+                    Text(mascot.name)
                         .font(.system(size: 14, weight: .bold, design: .monospaced))
-                    if let icon = cliIcon(source: source, size: 16) {
+                    if let icon = cliIcon(source: mascot.defaultSource, size: 16) {
                         Image(nsImage: icon)
                             .resizable()
                             .frame(width: 16, height: 16)
                     }
                 }
-                Text(desc)
+                Text(mascot.sourceDescription)
                     .font(.system(size: 12))
                     .foregroundStyle(.secondary)
             }

@@ -211,6 +211,9 @@ final class L10n: ObservableObject {
         "speed_very_fast": "2× Very Fast",
         "default_mascot": "Default Mascot",
         "default_mascot_desc": "Shown in the island when no sessions are active",
+        "automatic": "Automatic",
+        "agent_mascot_assignments": "Agent Mascot Assignments",
+        "agent_mascot_assignments_desc": "Choose a built-in mascot for each runtime agent. Automatic follows the agent source.",
 
         // Sound
         "enable_sound": "Enable Sound Effects",
@@ -560,6 +563,9 @@ final class L10n: ObservableObject {
         "speed_very_fast": "2x Sehr schnell",
         "default_mascot": "Standard-Maskottchen",
         "default_mascot_desc": "Wird in der Island angezeigt, wenn keine Sitzungen aktiv sind",
+        "automatic": "Automatisch",
+        "agent_mascot_assignments": "Agent-Maskottchen-Zuweisungen",
+        "agent_mascot_assignments_desc": "Wähle ein integriertes Maskottchen für jeden Laufzeit-Agenten. Automatisch folgt der Agent-Quelle.",
 
         // Sound
         "enable_sound": "Soundeffekte aktivieren",
@@ -913,6 +919,9 @@ final class L10n: ObservableObject {
         "speed_very_fast": "2× 极速",
         "default_mascot": "默认角色",
         "default_mascot_desc": "没有活跃会话时在灵动岛显示的角色",
+        "automatic": "自动",
+        "agent_mascot_assignments": "代理角色分配",
+        "agent_mascot_assignments_desc": "为每个运行时代理选择一个内置角色。自动模式会跟随代理来源。",
 
         // Sound
         "enable_sound": "启用音效",
@@ -1266,6 +1275,9 @@ final class L10n: ObservableObject {
         "speed_very_fast": "2× 極速",
         "default_mascot": "預設角色",
         "default_mascot_desc": "沒有活躍會話時在靈動島顯示的角色",
+        "automatic": "自動",
+        "agent_mascot_assignments": "代理角色指派",
+        "agent_mascot_assignments_desc": "為每個執行階段代理選擇一個內建角色。自動模式會跟隨代理來源。",
 
         // Sound
         "enable_sound": "啟用音效",
@@ -1619,6 +1631,9 @@ final class L10n: ObservableObject {
         "speed_very_fast": "2× 超高速",
         "default_mascot": "デフォルトキャラ",
         "default_mascot_desc": "アクティブなセッションがないときにノッチに表示",
+        "automatic": "自動",
+        "agent_mascot_assignments": "エージェントのマスコット割り当て",
+        "agent_mascot_assignments_desc": "実行中の各エージェントに内蔵マスコットを選択します。自動ではエージェントのソースに従います。",
 
         // Sound
         "enable_sound": "効果音を有効化",
@@ -1972,6 +1987,9 @@ final class L10n: ObservableObject {
         "speed_very_fast": "2× 매우 빠름",
         "default_mascot": "기본 캐릭터",
         "default_mascot_desc": "활성 세션이 없을 때 노치에 표시",
+        "automatic": "자동",
+        "agent_mascot_assignments": "에이전트 마스코트 할당",
+        "agent_mascot_assignments_desc": "각 런타임 에이전트에 내장 마스코트를 선택합니다. 자동 모드는 에이전트 소스를 따릅니다.",
 
         // Sound
         "enable_sound": "사운드 효과 사용",
@@ -2325,6 +2343,9 @@ final class L10n: ObservableObject {
         "speed_very_fast": "2× Çok Hızlı",
         "default_mascot": "Varsayılan Maskot",
         "default_mascot_desc": "Aktif oturum yokken çentikte gösterilir",
+        "automatic": "Otomatik",
+        "agent_mascot_assignments": "Ajan Maskotu Atamaları",
+        "agent_mascot_assignments_desc": "Her çalışma zamanı ajanı için yerleşik bir maskot seçin. Otomatik seçim ajan kaynağını izler.",
 
         // Sound
         "enable_sound": "Ses Efektlerini Etkinleştir",

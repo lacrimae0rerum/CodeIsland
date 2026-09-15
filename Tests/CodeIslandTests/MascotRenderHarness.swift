@@ -127,28 +127,6 @@ private struct MascotContactSheet: View {
 
     @ViewBuilder
     static func routedMascot(source: String, status: MascotAgentStatus, size: CGFloat) -> some View {
-        switch source {
-        case "codex": DexView(status: status, size: size)
-        case "grok": GrokView(status: status, size: size)
-        case "gemini": GeminiView(status: status, size: size)
-        case "cursor": CursorView(status: status, size: size)
-        case "trae": TraeView(status: status, size: size)
-        case "copilot": CopilotView(status: status, size: size)
-        case "qoder": QoderView(status: status, size: size)
-        case "droid": DroidView(status: status, size: size)
-        case "codebuddy": BuddyView(status: status, size: size)
-        case "stepfun": StepFunView(status: status, size: size)
-        case "opencode": OpenCodeView(status: status, size: size)
-        case "qwen": QwenView(status: status, size: size)
-        case "antigravity": AntiGravityView(status: status, size: size)
-        case "workbuddy": WorkBuddyView(status: status, size: size)
-        case "hermes": HermesView(status: status, size: size)
-        case "openclaw": OpenClawView(status: status, size: size)
-        case "kiro": KiroView(status: status, size: size)
-        case "kimi": KimiView(status: status, size: size)
-        case "pi": PiView(status: status, size: size)
-        case "cline": ClineView(status: status, size: size)
-        default: ClawdView(status: status, size: size)
-        }
+        MascotArtworkView(mascot: .automatic(for: source), status: status, size: size)
     }
 }

@@ -442,13 +442,14 @@ private struct CompactLeftWing: View {
     // Bound via @AppStorage so flipping the default mascot in Settings rerenders this view
     // even when AppState.primarySource wasn't recomputed (no session mutations in flight).
     @AppStorage(SettingsKey.defaultSource) private var settingsDefaultSource = SettingsDefaults.defaultSource
+    @AppStorage(SettingsKey.mascotSelections) private var mascotSelections = SettingsDefaults.mascotSelections
 
     private var displaySession: SessionSnapshot? {
         let sid = appState.rotatingSessionId ?? appState.activeSessionId ?? appState.sessions.keys.sorted().first
         guard let sid else { return nil }
         return appState.sessions[sid]
     }
-    private var displaySource: String {
+    private var runtimeDisplaySource: String {
         // Honor user's configured default mascot whenever nothing is actively
         // happening. Covers no-session and all-idle equally (#149) — without
         // this, an idle session's source overrides the user preference.
@@ -462,6 +463,13 @@ private struct CompactLeftWing: View {
             }
         }
         return appState.primarySource
+    }
+    private var displayMascot: BuiltInMascot {
+        if displayStatus == .idle {
+            return .automatic(for: settingsDefaultSource)
+        }
+        return MascotSelectionStore(serializedValue: mascotSelections)
+            .resolvedMascot(for: runtimeDisplaySource)
     }
     private var displayStatus: AgentStatus { displaySession?.status ?? .idle }
     private var liveTool: String? { displaySession?.currentTool }
@@ -497,10 +505,10 @@ private struct CompactLeftWing: View {
                     .overlay(Rectangle().stroke(.white.opacity(0.1), lineWidth: 1))
                 }
             } else {
-                MascotView(source: displaySource, status: displayStatus, size: mascotSize)
-                    .id(displaySource)
+                MascotView(mascot: displayMascot, status: displayStatus, size: mascotSize)
+                    .id(displayMascot)
                     .transition(.opacity)
-                    .animation(.easeInOut(duration: 0.3), value: displaySource)
+                    .animation(.easeInOut(duration: 0.3), value: displayMascot)
 
                 // On notch screens, show tool name only (no description, space is tight)
                 if hasNotch, showToolStatus, let tool = shownTool {
@@ -2307,8 +2315,13 @@ private struct SessionCard: View {
     @AppStorage(SettingsKey.aiMessageLines) private var aiMessageLines = SettingsDefaults.aiMessageLines
     @AppStorage(SettingsKey.showAgentDetails) private var showAgentDetails = SettingsDefaults.showAgentDetails
     @AppStorage(SettingsKey.autoCollapseAfterSessionJump) private var autoCollapseAfterSessionJump = SettingsDefaults.autoCollapseAfterSessionJump
+    @AppStorage(SettingsKey.mascotSelections) private var mascotSelections = SettingsDefaults.mascotSelections
     private var fontSize: CGFloat { CGFloat(contentFontSize) }
     private var aiLineLimit: Int? { aiMessageLines > 0 ? aiMessageLines : nil }
+    private var displayMascot: BuiltInMascot {
+        MascotSelectionStore(serializedValue: mascotSelections)
+            .resolvedMascot(for: session.mascotSource)
+    }
     private var approvalQueueIndex: Int? {
         appState.permissionQueue.firstIndex { ($0.event.sessionId ?? "default") == sessionId }
     }
@@ -2360,7 +2373,7 @@ private struct SessionCard: View {
         HStack(alignment: .center, spacing: 8) {
             // Column 1: Character + subagent icons
             VStack(spacing: 3) {
-                MascotView(source: session.mascotSource, status: session.status, size: 32)
+                MascotView(mascot: displayMascot, status: session.status, size: 32)
                 if showAgentDetails && !session.subagents.isEmpty {
                     let sorted = session.subagents.values.sorted { $0.startTime < $1.startTime }
                     // Grid: 4 per row, 8px icons

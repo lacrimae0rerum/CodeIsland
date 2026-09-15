@@ -103,6 +103,9 @@ enum SettingsKey {
     // Default mascot source when no sessions exist (falls back to this instead of always "claude")
     static let defaultSource = "defaultSource"
 
+    // Built-in mascot overrides keyed by normalized runtime source
+    static let mascotSelections = "mascotSelectionsBySource"
+
     // Buddy companion device
     static let esp32BridgeEnabled = "esp32BridgeEnabled"
     static let esp32HeartbeatSeconds = "esp32HeartbeatSeconds"
@@ -188,6 +191,7 @@ struct SettingsDefaults {
     static let collapsedWidthScale = 100  // percentage
 
     static let defaultSource = "claude"
+    static let mascotSelections = "{}"
 
     static let esp32BridgeEnabled = false
     static let esp32HeartbeatSeconds = 5.0
@@ -274,6 +278,7 @@ class SettingsManager {
             SettingsKey.appleCompanionEnabled: SettingsDefaults.appleCompanionEnabled,
             SettingsKey.appleCompanionHeartbeatSeconds: SettingsDefaults.appleCompanionHeartbeatSeconds,
             SettingsKey.defaultSource: SettingsDefaults.defaultSource,
+            SettingsKey.mascotSelections: SettingsDefaults.mascotSelections,
             SettingsKey.autoApproveTools: SettingsDefaults.autoApproveTools,
             SettingsKey.autoApproveSources: SettingsDefaults.autoApproveSources,
             SettingsKey.excludedHookCwdSubstrings: SettingsDefaults.excludedHookCwdSubstrings,

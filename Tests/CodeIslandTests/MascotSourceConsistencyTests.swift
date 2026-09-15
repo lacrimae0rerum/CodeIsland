@@ -1,5 +1,6 @@
 import XCTest
-@testable import CodeIslandCore
+@testable import CodeIsland
+import CodeIslandCore
 
 /// Left mascot and right host badge must agree on which agent/app a card represents.
 /// Empty hook `source` + Cursor host previously showed Clawd + "Cursor" (#296 follow-up).
@@ -62,5 +63,17 @@ final class MascotSourceConsistencyTests: XCTestCase {
         XCTAssertEqual(session.mascotSource, "cursor")
         XCTAssertEqual(session.terminalBadgeLabel, "Cursor")
         XCTAssertFalse(session.isCLIHostedInForeignApp)
+    }
+
+    func testVisualOverrideDoesNotChangeRuntimeSourceOrBadgeSemantics() {
+        let session = makeSession(source: "claude", termBundleId: "com.todesktop.230313mzl4w4u92")
+        var selections = MascotSelectionStore()
+        selections.setSelection(.dex, for: session.mascotSource)
+
+        XCTAssertEqual(selections.resolvedMascot(for: session.mascotSource), .dex)
+        XCTAssertEqual(session.source, "claude")
+        XCTAssertEqual(session.mascotSource, "claude")
+        XCTAssertEqual(session.terminalBadgeLabel, "Claude")
+        XCTAssertTrue(session.isCLIHostedInForeignApp)
     }
 }
