@@ -52,6 +52,7 @@ final class MascotRenderHarness: XCTestCase {
         let statuses: [(String, MascotAgentStatus)] = [
             ("idle", .idle),
             ("processing", .processing),
+            ("running", .running),
             ("waitingApproval", .waitingApproval),
             ("waitingQuestion", .waitingQuestion),
         ]
@@ -127,6 +128,7 @@ private struct MascotContactSheet: View {
 
     @ViewBuilder
     static func routedMascot(source: String, status: MascotAgentStatus, size: CGFloat) -> some View {
-        MascotArtworkView(mascot: .automatic(for: source), status: status, size: size)
+        let mascot = BuiltInMascot(rawValue: source) ?? .automatic(for: source)
+        MascotArtworkView(mascot: mascot, status: status, size: size)
     }
 }

@@ -1092,10 +1092,15 @@ private struct MascotsPage: View {
         Binding(
             get: { BuiltInMascot.automatic(for: defaultSource).rawValue },
             set: { value in
-                guard let mascot = BuiltInMascot(rawValue: value) else { return }
-                defaultSource = mascot.defaultSource
+                guard let mascot = BuiltInMascot(rawValue: value),
+                      let source = mascot.defaultSource else { return }
+                defaultSource = source
             }
         )
+    }
+
+    private var sourceBackedMascots: [BuiltInMascot] {
+        BuiltInMascot.allCases.filter { $0.defaultSource != nil }
     }
 
     private func mascotSelection(for source: String) -> Binding<String> {
@@ -1137,7 +1142,7 @@ private struct MascotsPage: View {
                 ), in: 0...300, step: 25)
 
                 Picker(selection: defaultMascot) {
-                    ForEach(BuiltInMascot.allCases) { mascot in
+                    ForEach(sourceBackedMascots) { mascot in
                         Text(mascot.sourceDescription).tag(mascot.rawValue)
                     }
                 } label: {
@@ -1192,7 +1197,8 @@ private struct MascotRow: View {
                 HStack(spacing: 6) {
                     Text(mascot.name)
                         .font(.system(size: 14, weight: .bold, design: .monospaced))
-                    if let icon = cliIcon(source: mascot.defaultSource, size: 16) {
+                    if let source = mascot.defaultSource,
+                       let icon = cliIcon(source: source, size: 16) {
                         Image(nsImage: icon)
                             .resizable()
                             .frame(width: 16, height: 16)

@@ -48,6 +48,7 @@ struct MascotArtworkView: View {
     @ViewBuilder
     var body: some View {
         switch mascot {
+        case .beagle: BeagleView(status: status, size: size)
         case .clawd: ClawdView(status: status, size: size)
         case .dex: DexView(status: status, size: size)
         case .grok: GrokView(status: status, size: size)

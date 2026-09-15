@@ -68,9 +68,9 @@ final class MascotSourceConsistencyTests: XCTestCase {
     func testVisualOverrideDoesNotChangeRuntimeSourceOrBadgeSemantics() {
         let session = makeSession(source: "claude", termBundleId: "com.todesktop.230313mzl4w4u92")
         var selections = MascotSelectionStore()
-        selections.setSelection(.dex, for: session.mascotSource)
+        selections.setSelection(.beagle, for: session.mascotSource)
 
-        XCTAssertEqual(selections.resolvedMascot(for: session.mascotSource), .dex)
+        XCTAssertEqual(selections.resolvedMascot(for: session.mascotSource), .beagle)
         XCTAssertEqual(session.source, "claude")
         XCTAssertEqual(session.mascotSource, "claude")
         XCTAssertEqual(session.terminalBadgeLabel, "Claude")

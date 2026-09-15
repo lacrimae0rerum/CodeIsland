@@ -3,6 +3,7 @@ import CodeIslandCore
 
 /// The unique mascot artwork bundled with CodeIsland.
 enum BuiltInMascot: String, CaseIterable, Codable, Identifiable {
+    case beagle
     case clawd
     case dex
     case grok
@@ -28,8 +29,10 @@ enum BuiltInMascot: String, CaseIterable, Codable, Identifiable {
     var id: String { rawValue }
 
     /// Runtime source persisted by the existing global idle-default setting.
-    var defaultSource: String {
+    /// Purely visual mascots have no source so they cannot leak into runtime payloads.
+    var defaultSource: String? {
         switch self {
+        case .beagle: nil
         case .clawd: "claude"
         case .dex: "codex"
         case .grok: "grok"
@@ -56,6 +59,7 @@ enum BuiltInMascot: String, CaseIterable, Codable, Identifiable {
 
     var name: String {
         switch self {
+        case .beagle: "Beagle"
         case .clawd: "Clawd"
         case .dex: "Dex"
         case .grok: "Grok"
@@ -82,6 +86,7 @@ enum BuiltInMascot: String, CaseIterable, Codable, Identifiable {
 
     var sourceDescription: String {
         switch self {
+        case .beagle: "Built-in visual mascot"
         case .clawd: "Claude Code"
         case .dex: "Codex (OpenAI)"
         case .grok: "Grok CLI"

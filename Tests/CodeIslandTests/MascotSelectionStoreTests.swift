@@ -25,10 +25,16 @@ final class MascotSelectionStoreTests: XCTestCase {
     func testOverrideResolvesAssignedBuiltInMascot() {
         var store = MascotSelectionStore()
 
-        store.setSelection(.dex, for: "claude")
+        store.setSelection(.beagle, for: "claude")
 
-        XCTAssertEqual(store.selection(for: "claude"), .dex)
-        XCTAssertEqual(store.resolvedMascot(for: "claude"), .dex)
+        XCTAssertEqual(store.selection(for: "claude"), .beagle)
+        XCTAssertEqual(store.resolvedMascot(for: "claude"), .beagle)
+        XCTAssertEqual(BuiltInMascot.automatic(for: "claude"), .clawd)
+    }
+
+    func testCatalogueIncludesBeagleAsVisualOnlyMascot() {
+        XCTAssertTrue(BuiltInMascot.allCases.contains(.beagle))
+        XCTAssertNil(BuiltInMascot.beagle.defaultSource)
     }
 
     func testAutomaticPreservesExistingSourceDrivenRouting() {
